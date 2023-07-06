@@ -1,0 +1,7 @@
+{
+    "board": "arduino:avr:nano",
+    "sketch": "SolarCollectorController.ino",
+    "programmer": "avrispmkii",
+    "configuration": "cpu=atmega328",
+    "port": "COM3"
+}
