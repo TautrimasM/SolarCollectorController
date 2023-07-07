@@ -1,0 +1,4 @@
+https://www.analog.com/en/technical-articles/guidelines-for-reliable-long-line-1wire-networks.html
+
+Changed to 1.5kOhm resistor between data and plus
+added 150ohm resistors at the points where branch meet line, increased stability

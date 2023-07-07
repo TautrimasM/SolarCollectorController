@@ -93,7 +93,7 @@ void DoLogic()
         DegassingValve.on();
         RefreshScreenEvent = true;
     }
-    if (millis() - DegassingTimeStart >= DegassingTime && !BoilerPump.getState())
+    if (DegassingValve.getState() && !BoilerPump.getState() && millis() - DegassingTimeStart >= DegassingTime)
     {
         DegassingValve.off();
         RefreshScreenEvent = true;
