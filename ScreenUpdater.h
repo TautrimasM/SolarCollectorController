@@ -14,4 +14,6 @@ void HysterysisExchangerBoilerMenu();
 void DegassVaveMenu();
 void LowestTempMenu();
 
+void StartupScreen();
+
 #endif

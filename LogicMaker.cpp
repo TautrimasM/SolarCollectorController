@@ -35,6 +35,7 @@ extern unsigned long ActivityTimeStart;
 
 extern bool SensorErrorFlag;
 extern bool ActivityFlag;
+extern bool RefreshScreenEvent;
 
 void DoLogic()
 {
@@ -46,6 +47,7 @@ void DoLogic()
             if (SolarCollectorTemperature - HeatExchangerTemperature < DeltaCollectorExchanger - HysteresisCollectorExchanger)
             {
                 CollectorPump.off();
+                RefreshScreenEvent = true;
             }
         }
         else
@@ -53,6 +55,7 @@ void DoLogic()
             if (SolarCollectorTemperature - HeatExchangerTemperature >= DeltaCollectorExchanger)
             {
                 CollectorPump.on();
+                RefreshScreenEvent = true;
             }
         }
 
@@ -61,6 +64,7 @@ void DoLogic()
             if (HeatExchangerTemperature - BoilerTemperature < DeltaExchangerBoiler - HysteresisExchangerBoiler)
             {
                 BoilerPump.off();
+                RefreshScreenEvent = true;
                 if (!DegassingFlag)
                 {
                     DegassingValve.off();
@@ -73,6 +77,7 @@ void DoLogic()
             {
                 BoilerPump.on();
                 DegassingValve.on();
+                RefreshScreenEvent = true;
             }
         }
     }
@@ -86,10 +91,12 @@ void DoLogic()
         DegassingTimeStart = millis();
         DegassingFlag = false;
         DegassingValve.on();
+        RefreshScreenEvent = true;
     }
     if (millis() - DegassingTimeStart >= DegassingTime && !BoilerPump.getState())
     {
         DegassingValve.off();
+        RefreshScreenEvent = true;
     }
 
     /*if (SensorErrorFlag)

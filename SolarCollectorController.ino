@@ -66,9 +66,13 @@ void setup()
 {
   InitWatchdog();
   InitDisplay();
+  StartupScreen();
   InitSensors();
   ReadEEPROM();
-  ReadSensors();
+  RequestSensors(); // request temps conversion from sensors
+  PetWatchdog();
+  delay(750);
+  RequestSensors(); // get temps from sensor
 }
 
 void loop()

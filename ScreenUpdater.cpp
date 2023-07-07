@@ -200,3 +200,12 @@ void LowestTempMenu()
     lcd.print(String(HaltTemperature, 1));
     lcd.write(byte(0));
 }
+
+void StartupScreen()
+{
+    lcd.clear();
+    lcd.setCursor(0, 1);
+    lcd.print("*System is Starting*");
+    lcd.setCursor(8, 2);
+    lcd.print("----");
+}
