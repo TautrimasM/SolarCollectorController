@@ -84,6 +84,7 @@ void DoLogic()
     else
     {
         CollectorPump.off();
+        BoilerPump.off();
     }
 
     if (DegassingFlag)
