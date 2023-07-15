@@ -15,6 +15,7 @@
 unsigned long ReadButtonsInterval = 50;
 unsigned long DegassingTime = 600000; // 600s or 10mins
 unsigned long ActivityTime = 10000;   // 10s
+unsigned long BoilerWaitTime = 90000; // 90s
 
 // set these according to existing sensors configuration
 uint8_t CollectorSensorId = 0;
@@ -30,6 +31,7 @@ unsigned long PetWatchdogTime = 0;
 unsigned long DegassingTimeStart = 0;
 unsigned long BacklightTimeStart = 0;
 unsigned long ActivityTimeStart = 0;
+unsigned long BoilerWaitTimeStart = 0;
 
 // these variables values will be read from sensors
 float SolarCollectorTemperature = 0;
@@ -50,6 +52,7 @@ bool DegassingFlag = false;
 bool SensorErrorFlag = false;
 bool BacklightOn = true;
 bool ActivityFlag = false;
+bool BoilerWaitFlag = false;
 
 uint8_t MenuItem = 0;
 

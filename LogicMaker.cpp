@@ -30,11 +30,16 @@ extern unsigned long DegassingTime;
 
 extern bool BacklightOn;
 extern unsigned long BacklightTimeStart;
+
+extern bool ActivityFlag;
 extern unsigned long ActivityTime;
 extern unsigned long ActivityTimeStart;
 
+extern bool BoilerWaitFlag;
+extern unsigned long BoilerWaitTimeStart;
+extern unsigned long BoilerWaitTime;
+
 extern bool SensorErrorFlag;
-extern bool ActivityFlag;
 extern bool RefreshScreenEvent;
 
 void DoLogic()
@@ -75,9 +80,21 @@ void DoLogic()
         {
             if (HeatExchangerTemperature - BoilerTemperature >= DeltaExchangerBoiler)
             {
-                BoilerPump.on();
+
                 DegassingValve.on();
-                RefreshScreenEvent = true;
+
+                if (!BoilerWaitFlag)
+                {
+                    BoilerWaitTimeStart = millis();
+                    BoilerWaitFlag = true;
+                    RefreshScreenEvent = true;
+                }
+                if (millis() - BoilerWaitTimeStart >= BoilerWaitTime)
+                {
+                    BoilerPump.on();
+                    BoilerWaitFlag = false;
+                    RefreshScreenEvent = true;
+                }
             }
         }
     }
