@@ -35,6 +35,7 @@ extern bool ActivityFlag;
 extern unsigned long ActivityTime;
 extern unsigned long ActivityTimeStart;
 
+extern bool BoilerPumpShouldDoSomething;
 extern bool BoilerWaitFlag;
 extern unsigned long BoilerWaitTimeStart;
 extern unsigned long BoilerWaitTime;
@@ -68,6 +69,7 @@ void DoLogic()
         {
             if (HeatExchangerTemperature - BoilerTemperature < DeltaExchangerBoiler - HysteresisExchangerBoiler)
             {
+                BoilerPumpShouldDoSomething = false;
                 BoilerPump.off();
                 RefreshScreenEvent = true;
                 if (!DegassingFlag)
@@ -80,21 +82,23 @@ void DoLogic()
         {
             if (HeatExchangerTemperature - BoilerTemperature >= DeltaExchangerBoiler)
             {
-
-                DegassingValve.on();
-
-                if (!BoilerWaitFlag)
-                {
-                    BoilerWaitTimeStart = millis();
-                    BoilerWaitFlag = true;
-                    RefreshScreenEvent = true;
-                }
-                if (millis() - BoilerWaitTimeStart >= BoilerWaitTime)
-                {
-                    BoilerPump.on();
-                    BoilerWaitFlag = false;
-                    RefreshScreenEvent = true;
-                }
+                BoilerPumpShouldDoSomething = true;
+            }
+        }
+        if (BoilerPumpShouldDoSomething)
+        {
+            DegassingValve.on();
+            if (!BoilerWaitFlag)
+            {
+                BoilerWaitTimeStart = millis();
+                BoilerWaitFlag = true;
+                RefreshScreenEvent = true;
+            }
+            if (millis() - BoilerWaitTimeStart >= BoilerWaitTime)
+            {
+                BoilerPump.on();
+                BoilerWaitFlag = false;
+                RefreshScreenEvent = true;
             }
         }
     }
@@ -102,6 +106,10 @@ void DoLogic()
     {
         CollectorPump.off();
         BoilerPump.off();
+        if (!DegassingFlag)
+        {
+            DegassingValve.off();
+        }
     }
 
     if (DegassingFlag)

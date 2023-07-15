@@ -53,6 +53,7 @@ bool SensorErrorFlag = false;
 bool BacklightOn = true;
 bool ActivityFlag = false;
 bool BoilerWaitFlag = false;
+bool BoilerPumpShouldDoSomething = false;
 
 uint8_t MenuItem = 0;
 
