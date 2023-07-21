@@ -28,6 +28,8 @@ extern float HysteresisExchangerBoiler;
 
 extern float HaltTemperature;
 
+extern unsigned long SensorFailTime;
+
 extern Relay CollectorPump;
 extern Relay BoilerPump;
 extern Relay DegassingValve;
@@ -130,6 +132,70 @@ void InfoMenu()
     lcd.print("Tb=");
     lcd.print(String(BoilerTemperature, 1));
     lcd.write(byte(0));
+
+    // diagnostic data:
+    lcd.print(" RT");
+    if (millis() < 86400000)
+    {
+        if (millis() < 3600000)
+        {
+            if (millis() < 60000)
+            {
+                uint8_t runs = millis() / 1000;
+                lcd.print(runs);
+                lcd.print("s");
+            }
+            else
+            {
+                uint8_t runmin = millis() / 60000;
+                lcd.print(runmin);
+                lcd.print("m");
+            }
+        }
+        else
+        {
+            uint8_t runh = millis() / 3600000;
+            lcd.print(runh);
+            lcd.print("h");
+        }
+    }
+    else
+    {
+        uint8_t rundays = millis() / 86400000;
+        lcd.print(rundays);
+        lcd.print("d");
+    }
+    lcd.print(" SK");
+    if ((millis() - SensorFailTime) < 86400000)
+    {
+        if ((millis() - SensorFailTime) < 3600000)
+        {
+            if ((millis() - SensorFailTime) < 60000)
+            {
+                uint8_t fs = (millis() - SensorFailTime) / 1000;
+                lcd.print(fs);
+                lcd.print("s");
+            }
+            else
+            {
+                uint8_t fmin = (millis() - SensorFailTime) / 60000;
+                lcd.print(fmin);
+                lcd.print("m");
+            }
+        }
+        else
+        {
+            uint8_t fh = (millis() - SensorFailTime) / 3600000;
+            lcd.print(fh);
+            lcd.print("h");
+        }
+    }
+    else
+    {
+        uint8_t fdays = (millis() - SensorFailTime) / 86400000;
+        lcd.print(fdays);
+        lcd.print("d");
+    }
 
     // line 3
     lcd.setCursor(0, 3);

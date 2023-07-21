@@ -13,9 +13,9 @@
 #define PET_WATCHDOG_INTERVAL 1000
 // these probably should be #define, but i did't manage to get them working in that case
 unsigned long ReadButtonsInterval = 50;
-unsigned long DegassingTime = 600000; // 600s or 10mins
-unsigned long ActivityTime = 10000;   // 10s
-unsigned long BoilerWaitTime = 90000; // 90s
+unsigned long DegassingTime = 600000;  // 600s or 10mins
+unsigned long ActivityTime = 10000;    // 10s
+unsigned long BoilerWaitTime = 120000; // 120s - 2min
 
 // set these according to existing sensors configuration
 uint8_t CollectorSensorId = 0;
@@ -32,6 +32,7 @@ unsigned long DegassingTimeStart = 0;
 unsigned long BacklightTimeStart = 0;
 unsigned long ActivityTimeStart = 0;
 unsigned long BoilerWaitTimeStart = 0;
+unsigned long SensorFailTime = 0;
 
 // these variables values will be read from sensors
 float SolarCollectorTemperature = 0;

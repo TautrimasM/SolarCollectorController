@@ -13,6 +13,8 @@ extern float SolarCollectorTemperature;
 extern float HeatExchangerTemperature;
 extern float BoilerTemperature;
 
+extern unsigned long SensorFailTime;
+
 extern bool SensorErrorFlag;
 
 OneWire oneWire(ONE_WIRE_BUS);
@@ -49,14 +51,17 @@ void ReadSensors()
     BoilerTemperature = sensors.getTempCByIndex(BoilerSensorId);
 
     if (
+        // temp too low or onewire failure
         SolarCollectorTemperature < -50 ||
         HeatExchangerTemperature < 1 ||
         BoilerTemperature < 1 ||
+        // temp too high
         SolarCollectorTemperature > 120 ||
-        HeatExchangerTemperature < 90 ||
-        BoilerTemperature < 80)
+        HeatExchangerTemperature > 90 ||
+        BoilerTemperature > 80)
     {
         SensorErrorFlag = true;
+        SensorFailTime = millis();
     }
     else
     {
