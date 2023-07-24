@@ -3,130 +3,136 @@
 #include "src/Button.h"
 #include "src/Relay.h"
 #include "EEPROMFunctions.h"
+#include "Defines.h"
 
-extern Button LeftButton;
-extern Button MidButton;
-extern Button RightButton;
+extern Button leftButton;
+extern Button midButton;
+extern Button rightButton;
 
-extern Relay DegassingValve;
+extern Relay degassingValve;
 
-extern float DeltaCollectorExchanger;
-extern float DeltaExchangerBoiler;
-extern float HysteresisCollectorExchanger;
-extern float HysteresisExchangerBoiler;
-extern float HaltTemperature;
+extern float deltaCollectorExchanger;
+extern float deltaExchangerBoiler;
+extern float hysteresisCollectorExchanger;
+extern float hysteresisExchangerBoiler;
+extern float haltTemperature;
 
-extern float DegassingTimeStart;
-extern float ReadButtonsTime;
+extern float degassingTimeStart;
+extern float readButtonsTime;
 
-extern bool RefreshScreenEvent;
-extern bool LogicEvent;
-extern bool BacklightOn;
-extern bool DegassingFlag;
-extern bool ActivityFlag;
-;
-extern unsigned long ReadButtonsInterval;
+extern bool refreshScreenEvent;
+extern bool backlightOn;
+extern bool degassingFlag;
+extern bool activityFlag;
+extern bool logicEvent;
 
-extern uint8_t MenuItem;
+extern unsigned long readButtonsInterval;
+
+extern uint8_t menuItem;
 
 void ReadButtons()
 {
-    if (LeftButton.isPressed())
+    if (leftButton.isPressed())
     {
+        SetMetaParameters();
         EditParameter(false);
         return;
     }
-    if (MidButton.isPressed())
+    if (midButton.isPressed())
     {
+        SetMetaParameters();
         EditMenuItem(true);
         return;
     }
-    if (RightButton.isPressed())
+    if (rightButton.isPressed())
     {
+        SetMetaParameters();
         EditParameter(true);
         return;
     }
-    ReadButtonsInterval = 100;
+    readButtonsInterval = READ_BUTTONS_INTERVAL;
+}
+void SetMetaParameters()
+{
+    backlightOn = true;
+    refreshScreenEvent = true;
+    readButtonsInterval = READ_BUTTONS_INTERVAL_WHEN_PRESSED;
+    activityFlag = true;
+    logicEvent = true;
 }
 
 void EditParameter(bool increment)
 {
-    BacklightOn = true;
-    LogicEvent = true;
-    RefreshScreenEvent = true;
-    ReadButtonsInterval = 500;
-    ActivityFlag = true;
-
-    switch (MenuItem)
+    switch (menuItem)
     {
     case 1:
         if (increment)
         {
-            DeltaCollectorExchanger = DeltaCollectorExchanger + 0.5;
+            deltaCollectorExchanger = deltaCollectorExchanger + 0.5;
         }
         else
         {
-            DeltaCollectorExchanger = DeltaCollectorExchanger - 0.5;
+            deltaCollectorExchanger = deltaCollectorExchanger - 0.5;
         }
         break;
     case 2:
         if (increment)
         {
-            if (HysteresisCollectorExchanger < 20)
+            if (hysteresisCollectorExchanger < 20)
             {
-                HysteresisCollectorExchanger = HysteresisCollectorExchanger + 0.5;
+                hysteresisCollectorExchanger = hysteresisCollectorExchanger + 0.5;
             }
         }
         else
         {
-            if (HysteresisCollectorExchanger > 0)
+            if (hysteresisCollectorExchanger > 0)
             {
-                HysteresisCollectorExchanger = HysteresisCollectorExchanger - 0.5;
+                hysteresisCollectorExchanger = hysteresisCollectorExchanger - 0.5;
             }
         }
         break;
     case 3:
         if (increment)
         {
-            DeltaExchangerBoiler = DeltaExchangerBoiler + 0.5;
+            deltaExchangerBoiler = deltaExchangerBoiler + 0.5;
         }
         else
         {
-            DeltaExchangerBoiler = DeltaExchangerBoiler - 0.5;
+            deltaExchangerBoiler = deltaExchangerBoiler - 0.5;
         }
         break;
     case 4:
         if (increment)
         {
-            if (HysteresisExchangerBoiler < 20)
+            if (hysteresisExchangerBoiler < 20)
             {
-                HysteresisExchangerBoiler = HysteresisExchangerBoiler + 0.5;
+                hysteresisExchangerBoiler = hysteresisExchangerBoiler + 0.5;
             }
         }
         else
         {
-            if (HysteresisExchangerBoiler > 0)
+            if (hysteresisExchangerBoiler > 0)
             {
-                HysteresisExchangerBoiler = HysteresisExchangerBoiler - 0.5;
+                hysteresisExchangerBoiler = hysteresisExchangerBoiler - 0.5;
             }
         }
         break;
     case 5:
-        DegassingFlag = !DegassingFlag;
+        degassingFlag = !degassingFlag;
         break;
     case 6:
         if (increment)
         {
-            if (HaltTemperature < 60)
+            if (haltTemperature < 60)
             {
-                HaltTemperature = HaltTemperature + 0.5;
+                haltTemperature = haltTemperature + 0.5;
             }
         }
         else
         {
-            if (HaltTemperature > 0)
+            if (haltTemperature > 0)
             {
-                HaltTemperature = HaltTemperature - 0.5;
+                haltTemperature = haltTemperature - 0.5;
             }
         }
         break;
@@ -138,24 +144,19 @@ void EditParameter(bool increment)
 
 void EditMenuItem(bool increment)
 {
-    BacklightOn = true;
-    RefreshScreenEvent = true;
-    ReadButtonsInterval = 500;
-    ActivityFlag = true;
-
     if (increment)
     {
-        if (MenuItem == 6)
-            MenuItem = 0;
+        if (menuItem == 6)
+            menuItem = 0;
         else
-            MenuItem++;
+            menuItem++;
     }
     else
     {
-        if (MenuItem == 0)
-            MenuItem = 6;
+        if (menuItem == 0)
+            menuItem = 6;
         else
-            MenuItem--;
+            menuItem--;
     }
     UpdateEEPROM();
 }

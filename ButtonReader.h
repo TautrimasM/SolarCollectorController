@@ -5,6 +5,7 @@
 
 void ReadButtons();
 
+void SetMetaParameters();
 void EditParameter(bool increment);
 void EditMenuItem(bool increment);
 
