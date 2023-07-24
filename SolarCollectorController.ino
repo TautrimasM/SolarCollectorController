@@ -10,7 +10,7 @@
 #include "EEPROMFunctions.h"
 
 // variables for storing timing data
-unsigned long currentMillis;
+unsigned long currentMillis = 0;
 unsigned long requestSensorsTime = 0;
 unsigned long refreshScreenTime = 0;
 unsigned long readButtonsTime = 0;
