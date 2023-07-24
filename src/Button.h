@@ -2,13 +2,12 @@
 #define BUTTON_H
 
 #include <Arduino.h>
-
+#define ACTIVE_STATE LOW // define active state
 class Button
 {
 
 private:
   byte pin;
-  byte active = LOW; // define active state
 
 public:
   Button(byte pin);

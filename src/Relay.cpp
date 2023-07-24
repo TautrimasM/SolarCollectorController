@@ -11,15 +11,15 @@ void Relay::init()
 }
 void Relay::on()
 {
-  digitalWrite(pin, active);
+  digitalWrite(pin, ACTIVE_STATE);
 }
 void Relay::off()
 {
-  digitalWrite(pin, !active);
+  digitalWrite(pin, !ACTIVE_STATE);
 }
 bool Relay::getState()
 {
-  return (digitalRead(pin) == active);
+  return (digitalRead(pin) == ACTIVE_STATE);
 }
 String Relay::getStateString()
 {

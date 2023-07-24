@@ -1,6 +1,7 @@
 #include "src/Relay.h"
 #include "src/Button.h"
 
+#include "Defines.h"
 #include "SensorReader.h"
 #include "ScreenUpdater.h"
 #include "ButtonReader.h"
@@ -8,59 +9,52 @@
 #include "LogicMaker.h"
 #include "EEPROMFunctions.h"
 
-#define REQUEST_SENSORS_INTERVAL 1000 // 1s should be ok
-#define REFRESH_SCREEN_INTERVAL 5000
-#define PET_WATCHDOG_INTERVAL 1000
-// these probably should be #define, but i did't manage to get them working in that case
-unsigned long ReadButtonsInterval = 50;
-unsigned long DegassingTime = 600000; // 600s or 10mins
-unsigned long ActivityTime = 10000;   // 10s
-
-// set these according to existing sensors configuration
-uint8_t CollectorSensorId = 0;
-uint8_t ExchangerSensorId = 2;
-uint8_t BoilerSensorId = 1;
-
 // variables for storing timing data
-unsigned long currentMillis;
-unsigned long RequestSensorsTime = 0;
-unsigned long RefreshScreenTime = 0;
-unsigned long ReadButtonsTime = 0;
-unsigned long PetWatchdogTime = 0;
-unsigned long DegassingTimeStart = 0;
-unsigned long BacklightTimeStart = 0;
-unsigned long ActivityTimeStart = 0;
+unsigned long currentMillis = 0;
+unsigned long requestSensorsTime = 0;
+unsigned long refreshScreenTime = 0;
+unsigned long readButtonsTime = 0;
+unsigned long petWatchdogTime = 0;
+unsigned long degassingTimeStart = 0;
+unsigned long backlightTimeStart = 0;
+unsigned long activityTimeStart = 0;
+unsigned long boilerWaitTimeStart = 0;
+unsigned long sensorFailTime = 0;
+unsigned long readButtonsInterval = READ_BUTTONS_INTERVAL;
 
 // these variables values will be read from sensors
-float SolarCollectorTemperature = 0;
-float HeatExchangerTemperature = 0;
-float BoilerTemperature = 0;
+float solarCollectorTemperature = 0;
+float heatExchangerTemperature = 0;
+float boilerTemperature = 0;
 
 // these variables will be read from eeprom and/or set by user
-float DeltaCollectorExchanger = 0;
-float DeltaExchangerBoiler = 0;
-float HysteresisCollectorExchanger = 0;
-float HysteresisExchangerBoiler = 0;
-float HaltTemperature = 0;
+float deltaCollectorExchanger = 0;
+float deltaExchangerBoiler = 0;
+float hysteresisCollectorExchanger = 0;
+float hysteresisExchangerBoiler = 0;
+float haltTemperature = 0;
 
 // event flags
-bool RefreshScreenEvent = true;
-bool LogicEvent = true;
-bool DegassingFlag = false;
-bool SensorErrorFlag = false;
-bool BacklightOn = true;
-bool ActivityFlag = false;
+bool refreshScreenEvent = true;
+bool logicEvent = false;
+bool degassingFlag = false;
+bool degassingInProgress = false;
+bool sensorErrorFlag = false;
+bool backlightOn = true;
+bool activityFlag = false;
+bool boilerWaitFlag = false;
+bool boilerPumpShouldDoSomething = false;
 
-uint8_t MenuItem = 0;
+uint8_t menuItem = 0;
 
 // physical objects
-Relay CollectorPump(10);
-Relay BoilerPump(11);
-Relay DegassingValve(12);
+Relay collectorPump(10);
+Relay boilerPump(11);
+Relay degassingValve(12);
 
-Button LeftButton(7);
-Button MidButton(8);
-Button RightButton(9);
+Button leftButton(7);
+Button midButton(8);
+Button rightButton(9);
 
 void setup()
 {
@@ -79,34 +73,35 @@ void loop()
 {
   currentMillis = millis();
 
-  if (currentMillis - RequestSensorsTime >= REQUEST_SENSORS_INTERVAL)
+  if (currentMillis - requestSensorsTime >= REQUEST_SENSORS_INTERVAL)
   {
-    RequestSensorsTime = currentMillis;
+    requestSensorsTime = currentMillis;
     RequestSensors();
   }
 
-  if (currentMillis - RefreshScreenTime >= REFRESH_SCREEN_INTERVAL || RefreshScreenEvent)
+  if (currentMillis - refreshScreenTime >= REFRESH_SCREEN_INTERVAL || refreshScreenEvent)
   {
 
-    RefreshScreenEvent = false;
-    RefreshScreenTime = currentMillis;
+    refreshScreenEvent = false;
+    refreshScreenTime = currentMillis;
     UpdateScreen();
   }
 
-  if (currentMillis - ReadButtonsTime >= ReadButtonsInterval)
+  if (currentMillis - readButtonsTime >= readButtonsInterval)
   {
-    ReadButtonsTime = currentMillis;
+    readButtonsTime = currentMillis;
     ReadButtons();
   }
 
-  if (currentMillis - PetWatchdogTime >= PET_WATCHDOG_INTERVAL)
+  if (currentMillis - petWatchdogTime >= PET_WATCHDOG_INTERVAL)
   {
-    PetWatchdogTime = currentMillis;
+    petWatchdogTime = currentMillis;
     PetWatchdog();
   }
 
-  if (LogicEvent)
+  if (logicEvent)
   {
+    logicEvent = false;
     DoLogic();
   }
 }

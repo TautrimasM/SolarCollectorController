@@ -12,5 +12,5 @@ void Button::init()
 
 bool Button::isPressed()
 {
-  return (digitalRead(pin) == active);
+  return (digitalRead(pin) == ACTIVE_STATE);
 }

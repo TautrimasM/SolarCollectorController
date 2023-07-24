@@ -2,13 +2,13 @@
 #define RELAY
 
 #include <Arduino.h>
+#define ACTIVE_STATE LOW // define active state
 
 class Relay
 {
 
 private:
   byte pin;
-  byte active = LOW; // define active state
 
 public:
   Relay(byte pin);
