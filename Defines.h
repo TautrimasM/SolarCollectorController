@@ -28,7 +28,15 @@
 #define ID_EXCHANGER_SENSOR 2
 #define ID_BOILER_SENSOR 1
 
-#define ONE_WIRE_BUS 2
-// 15m line works ok witk ~1.5k pullup resistor and 150ohm resistors for each branch
+// physical objects connection pins
+#define ONE_WIRE_BUS 2 // 15m line works ok witk ~1.5k pullup resistor and 150ohm resistors for each branch
+
+#define COLLECTOR_PUMP_PIN 10
+#define BOILER_PUMP_PIN 11
+#define DEGASSING_VALVE_PIN 12
+
+#define LEFT_BUTTON_PIN 7
+#define MID_BUTTON_PIN 8
+#define RIGHT_BUTTON_PIN 9
 
 #endif

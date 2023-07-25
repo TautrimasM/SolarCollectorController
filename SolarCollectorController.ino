@@ -49,13 +49,13 @@ bool sensorErrorForLongTime = false;
 uint8_t menuItem = 0;
 
 // physical objects
-Relay collectorPump(10);
-Relay boilerPump(11);
-Relay degassingValve(12);
+Relay collectorPump(COLLECTOR_PUMP_PIN);
+Relay boilerPump(BOILER_PUMP_PIN);
+Relay degassingValve(DEGASSING_VALVE_PIN);
 
-Button leftButton(7);
-Button midButton(8);
-Button rightButton(9);
+Button leftButton(LEFT_BUTTON_PIN);
+Button midButton(MID_BUTTON_PIN);
+Button rightButton(RIGHT_BUTTON_PIN);
 
 void setup()
 {
