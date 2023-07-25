@@ -1,0 +1,9 @@
+These circuits are for reference, not absolute.
+
+Button used in this configuration to do physical debouncing.
+
+Dallas sensors may need resistors and/or capacitors to mitigate line noise. more about that here:
+https://www.analog.com/en/technical-articles/guidelines-for-reliable-long-line-1wire-networks.html
+
+LCD connected via i2c converter
+
