@@ -68,52 +68,72 @@ void EditParameter(bool increment)
     case 1:
         if (increment)
         {
-            deltaCollectorExchanger = deltaCollectorExchanger + 0.5;
+            if (deltaCollectorExchanger < DELTA_MAX)
+            {
+                deltaCollectorExchanger = deltaCollectorExchanger + TEMPERATURE_INCREMENT;
+            }
         }
         else
         {
-            deltaCollectorExchanger = deltaCollectorExchanger - 0.5;
+            if (deltaCollectorExchanger < DELTA_MIN)
+            {
+                deltaCollectorExchanger = deltaCollectorExchanger - TEMPERATURE_INCREMENT;
+                if (hysteresisCollectorExchanger >= deltaCollectorExchanger)
+                {
+                    hysteresisCollectorExchanger = deltaCollectorExchanger - TEMPERATURE_INCREMENT;
+                }
+            }
         }
         break;
     case 2:
         if (increment)
         {
-            if (hysteresisCollectorExchanger < 20)
+            if (hysteresisCollectorExchanger < HYSTERESIS_MAX && hysteresisCollectorExchanger < (deltaCollectorExchanger - 2 * TEMPERATURE_INCREMENT))
             {
-                hysteresisCollectorExchanger = hysteresisCollectorExchanger + 0.5;
+                hysteresisCollectorExchanger = hysteresisCollectorExchanger + TEMPERATURE_INCREMENT;
             }
         }
         else
         {
-            if (hysteresisCollectorExchanger > 0)
+            if (hysteresisCollectorExchanger > HYSTERESIS_MIN)
             {
-                hysteresisCollectorExchanger = hysteresisCollectorExchanger - 0.5;
+                hysteresisCollectorExchanger = hysteresisCollectorExchanger - TEMPERATURE_INCREMENT;
             }
         }
         break;
     case 3:
         if (increment)
         {
-            deltaExchangerBoiler = deltaExchangerBoiler + 0.5;
+            if (deltaExchangerBoiler < DELTA_MAX)
+            {
+                deltaExchangerBoiler = deltaExchangerBoiler + TEMPERATURE_INCREMENT;
+            }
         }
         else
         {
-            deltaExchangerBoiler = deltaExchangerBoiler - 0.5;
+            if (deltaExchangerBoiler < DELTA_MIN)
+            {
+                deltaExchangerBoiler = deltaExchangerBoiler - TEMPERATURE_INCREMENT;
+                if (hysteresisExchangerBoiler >= deltaExchangerBoiler)
+                {
+                    hysteresisExchangerBoiler = deltaExchangerBoiler - TEMPERATURE_INCREMENT;
+                }
+            }
         }
         break;
     case 4:
         if (increment)
         {
-            if (hysteresisExchangerBoiler < 20)
+            if (hysteresisExchangerBoiler < HYSTERESIS_MAX && hysteresisExchangerBoiler < (deltaExchangerBoiler - 2 * TEMPERATURE_INCREMENT))
             {
-                hysteresisExchangerBoiler = hysteresisExchangerBoiler + 0.5;
+                hysteresisExchangerBoiler = hysteresisExchangerBoiler + TEMPERATURE_INCREMENT;
             }
         }
         else
         {
-            if (hysteresisExchangerBoiler > 0)
+            if (hysteresisExchangerBoiler > HYSTERESIS_MIN)
             {
-                hysteresisExchangerBoiler = hysteresisExchangerBoiler - 0.5;
+                hysteresisExchangerBoiler = hysteresisExchangerBoiler - TEMPERATURE_INCREMENT;
             }
         }
         break;
@@ -123,16 +143,16 @@ void EditParameter(bool increment)
     case 6:
         if (increment)
         {
-            if (haltTemperature < 60)
+            if (haltTemperature < HALT_TEMP_MAX)
             {
-                haltTemperature = haltTemperature + 0.5;
+                haltTemperature = haltTemperature + TEMPERATURE_INCREMENT;
             }
         }
         else
         {
-            if (haltTemperature > 0)
+            if (haltTemperature > HALT_TEMP_MIN)
             {
-                haltTemperature = haltTemperature - 0.5;
+                haltTemperature = haltTemperature - TEMPERATURE_INCREMENT;
             }
         }
         break;

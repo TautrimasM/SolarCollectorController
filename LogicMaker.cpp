@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "LogicMaker.h"
+#include "EEPROMFunctions.h"
 #include "src/Button.h"
 #include "src/Relay.h"
 #include "src/LCI2C/LiquidCrystal_I2C.h"
@@ -40,11 +41,12 @@ extern bool boilerWaitFlag;
 extern unsigned long boilerWaitTimeStart;
 
 extern bool sensorErrorFlag;
+extern bool sensorErrorForLongTime;
 extern bool refreshScreenEvent;
 
 void DoLogic()
 {
-    if (solarCollectorTemperature > haltTemperature)
+    if (solarCollectorTemperature > haltTemperature && !sensorErrorForLongTime)
     {
 
         if (collectorPump.getState())
@@ -150,5 +152,6 @@ void DoLogic()
     if (millis() - activityTimeStart >= ACTIVITY_TIME)
     {
         menuItem = 0;
+        UpdateEEPROM();
     }
 }

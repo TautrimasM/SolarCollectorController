@@ -44,6 +44,7 @@ bool backlightOn = true;
 bool activityFlag = false;
 bool boilerWaitFlag = false;
 bool boilerPumpShouldDoSomething = false;
+bool sensorErrorForLongTime = false;
 
 uint8_t menuItem = 0;
 
@@ -81,7 +82,6 @@ void loop()
 
   if (currentMillis - refreshScreenTime >= REFRESH_SCREEN_INTERVAL || refreshScreenEvent)
   {
-
     refreshScreenEvent = false;
     refreshScreenTime = currentMillis;
     UpdateScreen();

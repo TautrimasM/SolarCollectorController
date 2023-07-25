@@ -29,6 +29,7 @@ extern float hysteresisExchangerBoiler;
 extern float haltTemperature;
 
 extern unsigned long sensorFailTime;
+extern bool sensorErrorForLongTime;
 
 extern Relay collectorPump;
 extern Relay boilerPump;
@@ -208,6 +209,17 @@ void InfoMenu()
     lcd.print(boilerPump.getStateString());
     lcd.print(" DG=");
     lcd.print(degassingValve.getStateString());
+
+    if (sensorErrorForLongTime)
+    {
+        String err = "Err";
+        lcd.setCursor(3, 0);
+        lcd.print(err);
+        lcd.setCursor(3, 1);
+        lcd.print(err);
+        lcd.setCursor(3, 2);
+        lcd.print(err);
+    }
 }
 
 void DeltaCollectorExchangerMenu()
