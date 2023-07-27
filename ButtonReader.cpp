@@ -75,7 +75,7 @@ void EditParameter(bool increment)
         }
         else
         {
-            if (deltaCollectorExchanger < DELTA_MIN)
+            if (deltaCollectorExchanger > DELTA_MIN)
             {
                 deltaCollectorExchanger = deltaCollectorExchanger - TEMPERATURE_INCREMENT;
                 if (hysteresisCollectorExchanger >= deltaCollectorExchanger)
@@ -111,7 +111,7 @@ void EditParameter(bool increment)
         }
         else
         {
-            if (deltaExchangerBoiler < DELTA_MIN)
+            if (deltaExchangerBoiler > DELTA_MIN)
             {
                 deltaExchangerBoiler = deltaExchangerBoiler - TEMPERATURE_INCREMENT;
                 if (hysteresisExchangerBoiler >= deltaExchangerBoiler)
