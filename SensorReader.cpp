@@ -3,9 +3,6 @@
 #include "src/DallasTemperature/DallasTemperature.h"
 #include "Defines.h"
 
-#define ONE_WIRE_BUS 2
-// 15m line works ok witk ~1.5k pullup resistor and 150ohm resistors for each branch
-
 extern float solarCollectorTemperature;
 extern float heatExchangerTemperature;
 extern float boilerTemperature;
@@ -14,11 +11,12 @@ extern unsigned long sensorFailTime;
 
 extern bool sensorErrorFlag;
 extern bool logicEvent;
+extern bool sensorErrorForLongTime;
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
-int i = 0;
+int i = 0, j = 0;
 
 void InitSensors()
 {
@@ -52,6 +50,13 @@ void ReadSensors()
     {
         sensorErrorFlag = true;
         sensorFailTime = millis();
+
+        j++;
+        if (j >= (SENSOR_ERROR_LONG_TIME / REQUEST_SENSORS_INTERVAL))
+        {
+            sensorErrorForLongTime = true;
+            logicEvent = true;
+        }
     }
     else
     {
@@ -59,6 +64,8 @@ void ReadSensors()
         heatExchangerTemperature = temp2;
         boilerTemperature = temp3;
         logicEvent = true;
+        sensorErrorForLongTime = false;
+        j = 0;
     }
 
     if (

@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "LogicMaker.h"
+#include "EEPROMFunctions.h"
 #include "src/Button.h"
 #include "src/Relay.h"
 #include "src/LCI2C/LiquidCrystal_I2C.h"
@@ -40,11 +41,12 @@ extern bool boilerWaitFlag;
 extern unsigned long boilerWaitTimeStart;
 
 extern bool sensorErrorFlag;
+extern bool sensorErrorForLongTime;
 extern bool refreshScreenEvent;
 
 void DoLogic()
 {
-    if (solarCollectorTemperature > haltTemperature)
+    if (solarCollectorTemperature > haltTemperature && !sensorErrorForLongTime)
     {
 
         if (collectorPump.getState())
@@ -69,8 +71,8 @@ void DoLogic()
             if (heatExchangerTemperature - boilerTemperature < deltaExchangerBoiler - hysteresisExchangerBoiler)
             {
                 boilerPumpShouldDoSomething = false;
-                boilerPump.off();
                 refreshScreenEvent = true;
+                boilerPump.off();
                 if (!degassingInProgress)
                 {
                     degassingValve.off();
@@ -84,7 +86,7 @@ void DoLogic()
                 boilerPumpShouldDoSomething = true;
             }
         }
-        if (boilerPumpShouldDoSomething)
+        if (boilerPumpShouldDoSomething && !boilerPump.getState())
         {
             degassingValve.on();
             if (!boilerWaitFlag)
@@ -92,7 +94,7 @@ void DoLogic()
                 boilerWaitTimeStart = millis();
                 boilerWaitFlag = true;
             }
-            if (millis() - boilerWaitTimeStart >= BOILER_DELAY_TIME)
+            else if (millis() - boilerWaitTimeStart >= BOILER_DELAY_TIME)
             {
                 boilerPump.on();
                 boilerWaitFlag = false;
@@ -102,6 +104,7 @@ void DoLogic()
     }
     else
     {
+        boilerPumpShouldDoSomething = false;
         collectorPump.off();
         boilerPump.off();
         if (!degassingInProgress)
@@ -110,19 +113,20 @@ void DoLogic()
         }
     }
 
-    if (degassingFlag)
+    if (degassingFlag && !degassingInProgress)
     {
         degassingTimeStart = millis();
-        degassingFlag = false;
         degassingInProgress = true;
         degassingValve.on();
         refreshScreenEvent = true;
     }
-    if (degassingValve.getState() && !boilerPump.getState() && millis() - degassingTimeStart >= DEGASSING_TIME)
+    if ((!boilerPump.getState() && !boilerPumpShouldDoSomething) &&
+        (!degassingFlag || (degassingInProgress && degassingValve.getState() && millis() - degassingTimeStart >= DEGASSING_TIME)))
     {
         degassingValve.off();
         refreshScreenEvent = true;
         degassingInProgress = false;
+        degassingFlag = false;
     }
 
     /*if (sensorErrorFlag)
@@ -150,5 +154,6 @@ void DoLogic()
     if (millis() - activityTimeStart >= ACTIVITY_TIME)
     {
         menuItem = 0;
+        UpdateEEPROM();
     }
 }
