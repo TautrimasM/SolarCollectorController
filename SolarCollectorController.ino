@@ -60,9 +60,9 @@ Button rightButton(RIGHT_BUTTON_PIN);
 
 void setup()
 {
-  Serial.begin(9600);
   InitDisplay();
   StartupScreen();
+  InitSerial();
   InitSensors();
   ReadEEPROM();
   RequestSensors(); // request temps conversion from sensors
