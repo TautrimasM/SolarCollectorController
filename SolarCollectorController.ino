@@ -8,6 +8,7 @@
 #include "WatchdogPet.h"
 #include "LogicMaker.h"
 #include "EEPROMFunctions.h"
+#include "SerialPrinter.h"
 
 // variables for storing timing data
 unsigned long currentMillis = 0;
@@ -59,15 +60,15 @@ Button rightButton(RIGHT_BUTTON_PIN);
 
 void setup()
 {
-  InitWatchdog();
+  Serial.begin(9600);
   InitDisplay();
   StartupScreen();
   InitSensors();
   ReadEEPROM();
   RequestSensors(); // request temps conversion from sensors
-  PetWatchdog();
-  delay(750);
+  delay(1000);
   RequestSensors(); // get temps from sensor
+  InitWatchdog();
 }
 
 void loop()
@@ -86,7 +87,6 @@ void loop()
     refreshScreenTime = currentMillis;
     UpdateScreen();
   }
-
   if (currentMillis - readButtonsTime >= readButtonsInterval)
   {
     readButtonsTime = currentMillis;
@@ -103,5 +103,6 @@ void loop()
   {
     logicEvent = false;
     DoLogic();
+    PrintSerialData();
   }
 }

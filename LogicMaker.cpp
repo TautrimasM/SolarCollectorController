@@ -71,8 +71,8 @@ void DoLogic()
             if (heatExchangerTemperature - boilerTemperature < deltaExchangerBoiler - hysteresisExchangerBoiler)
             {
                 boilerPumpShouldDoSomething = false;
-                boilerPump.off();
                 refreshScreenEvent = true;
+                boilerPump.off();
                 if (!degassingInProgress)
                 {
                     degassingValve.off();
@@ -86,7 +86,7 @@ void DoLogic()
                 boilerPumpShouldDoSomething = true;
             }
         }
-        if (boilerPumpShouldDoSomething)
+        if (boilerPumpShouldDoSomething && !boilerPump.getState())
         {
             degassingValve.on();
             if (!boilerWaitFlag)
@@ -94,7 +94,7 @@ void DoLogic()
                 boilerWaitTimeStart = millis();
                 boilerWaitFlag = true;
             }
-            if (millis() - boilerWaitTimeStart >= BOILER_DELAY_TIME)
+            else if (millis() - boilerWaitTimeStart >= BOILER_DELAY_TIME)
             {
                 boilerPump.on();
                 boilerWaitFlag = false;
@@ -104,6 +104,7 @@ void DoLogic()
     }
     else
     {
+        boilerPumpShouldDoSomething = false;
         collectorPump.off();
         boilerPump.off();
         if (!degassingInProgress)
@@ -112,19 +113,20 @@ void DoLogic()
         }
     }
 
-    if (degassingFlag)
+    if (degassingFlag && !degassingInProgress)
     {
         degassingTimeStart = millis();
-        degassingFlag = false;
         degassingInProgress = true;
         degassingValve.on();
         refreshScreenEvent = true;
     }
-    if (degassingValve.getState() && !boilerPump.getState() && millis() - degassingTimeStart >= DEGASSING_TIME)
+    if ((!boilerPump.getState() && !boilerPumpShouldDoSomething) &&
+        (!degassingFlag || (degassingInProgress && degassingValve.getState() && millis() - degassingTimeStart >= DEGASSING_TIME)))
     {
         degassingValve.off();
         refreshScreenEvent = true;
         degassingInProgress = false;
+        degassingFlag = false;
     }
 
     /*if (sensorErrorFlag)

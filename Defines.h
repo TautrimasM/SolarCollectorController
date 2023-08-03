@@ -39,4 +39,5 @@
 #define MID_BUTTON_PIN 8
 #define RIGHT_BUTTON_PIN 9
 
+#define SERIAL_BAUD_RATE 9600
 #endif
