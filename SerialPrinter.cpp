@@ -20,30 +20,6 @@ void InitSerial()
 
 void PrintSerialData()
 {
-    // Ts
-    Serial.print(String(solarCollectorTemperature, 1));
-    Serial.print(",");
-    // Tk
-    Serial.print(String(heatExchangerTemperature, 1));
-    Serial.print(",");
-    // Tb
-    Serial.print(String(boilerTemperature, 1));
-
-    // Ss
-    Serial.print(",");
-    Serial.print(collectorPump.getState());
-    Serial.print(",");
-    // Sb
-    Serial.print(boilerPump.getStateString());
-    Serial.print(",");
-    // DG
-    Serial.print(degassingValve.getStateString());
-
-    Serial.print(",");
-    // run time
-    Serial.print(millis());
-    // sensor fail time
-    Serial.print(",");
-    Serial.print(millis() - sensorFailTime);
-    Serial.print("\n");
+    Serial.print(
+        String(solarCollectorTemperature, 1) + "," + String(heatExchangerTemperature, 1) + "," + String(boilerTemperature, 1) + "," + collectorPump.getState() + "," + boilerPump.getState() + "," + degassingValve.getState() + "," + String(millis()) + "," + String(millis() - sensorFailTime) + "\n");
 }
