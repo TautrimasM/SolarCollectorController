@@ -9,12 +9,6 @@
 #define READ_BUTTONS_INTERVAL 50
 #define READ_BUTTONS_INTERVAL_WHEN_PRESSED 500
 
-<<<<<<< Updated upstream
-#define DEGASSING_TIME 600000         // 10min
-#define ACTIVITY_TIME 10000           // 10s
-#define BOILER_DELAY_TIME 120000      // 2min
-#define SENSOR_ERROR_LONG_TIME 600000 // 10min
-=======
 #define DEGASSING_TIME 600000            // 10min
 #define ACTIVITY_TIME 10000              // 10s
 #define BOILER_DELAY_TIME 120000         // 2min
@@ -22,7 +16,6 @@
 #define SENSOR_ERROR_LONG_TIME 600000    // 10min
 #define AUX_DELAY_TIME_MAX (3600000 * 2) // 2hours
 #define AUX_DELAY_TIME_INCREMENT 60000   // 1min
->>>>>>> Stashed changes
 
 // degrees C
 #define TEMPERATURE_INCREMENT 0.5
