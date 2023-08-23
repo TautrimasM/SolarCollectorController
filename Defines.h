@@ -11,7 +11,7 @@
 
 #define DEGASSING_TIME 600000         // 10min
 #define ACTIVITY_TIME 10000           // 10s
-#define BOILER_DELAY_TIME 120000      // 2min
+#define BOILER_DELAY_TIME 180000      // 3min
 #define SENSOR_ERROR_LONG_TIME 600000 // 10min
 
 // degrees C
