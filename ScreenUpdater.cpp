@@ -31,6 +31,8 @@ extern float haltTemperature;
 extern unsigned long sensorFailTime;
 extern bool sensorErrorForLongTime;
 
+extern unsigned long auxHeatingDelayTime;
+
 extern Relay collectorPump;
 extern Relay boilerPump;
 extern Relay degassingValve;
@@ -87,6 +89,9 @@ void UpdateScreen()
         break;
     case 6:
         LowestTempMenu();
+        break;
+    case 7:
+        DelayAfterAuxHeatingMenu();
         break;
 
     default:
@@ -285,6 +290,17 @@ void LowestTempMenu()
     lcd.write(byte(0));
 }
 
+void DelayAfterAuxHeatingMenu()
+{
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Delsimas po");
+    lcd.setCursor(1, 0);
+    lcd.print("sildymo tenu:");
+    lcd.setCursor(2, 1);
+    lcd.print(auxHeatingDelayTime / 60000);
+    lcd.write("min");
+}
 void StartupScreen()
 {
     lcd.clear();

@@ -8,6 +8,7 @@
 extern Button leftButton;
 extern Button midButton;
 extern Button rightButton;
+extern Button auxHeatingInput;
 
 extern Relay degassingValve;
 
@@ -25,7 +26,9 @@ extern bool backlightOn;
 extern bool degassingFlag;
 extern bool activityFlag;
 extern bool logicEvent;
+extern bool auxHeatingIsOn;
 
+extern unsigned long auxHeatingDelayTime;
 extern unsigned long readButtonsInterval;
 
 extern uint8_t menuItem;
@@ -36,22 +39,24 @@ void ReadButtons()
     {
         SetMetaParameters();
         EditParameter(false);
-        return;
     }
     if (midButton.isPressed())
     {
         SetMetaParameters();
         EditMenuItem(true);
-        return;
     }
     if (rightButton.isPressed())
     {
         SetMetaParameters();
         EditParameter(true);
-        return;
     }
-    readButtonsInterval = READ_BUTTONS_INTERVAL;
+
+    if (!activityFlag)
+    {
+        readButtonsInterval = READ_BUTTONS_INTERVAL;
+    }
 }
+
 void SetMetaParameters()
 {
     backlightOn = true;
@@ -85,6 +90,7 @@ void EditParameter(bool increment)
             }
         }
         break;
+
     case 2:
         if (increment)
         {
@@ -101,6 +107,7 @@ void EditParameter(bool increment)
             }
         }
         break;
+
     case 3:
         if (increment)
         {
@@ -121,6 +128,7 @@ void EditParameter(bool increment)
             }
         }
         break;
+
     case 4:
         if (increment)
         {
@@ -137,9 +145,11 @@ void EditParameter(bool increment)
             }
         }
         break;
+
     case 5:
         degassingFlag = !degassingFlag;
         break;
+
     case 6:
         if (increment)
         {
@@ -157,6 +167,23 @@ void EditParameter(bool increment)
         }
         break;
 
+    case 7:
+        if (increment)
+        {
+            if (auxHeatingDelayTime < AUX_DELAY_TIME_MAX)
+            {
+                auxHeatingDelayTime = auxHeatingDelayTime + AUX_DELAY_TIME_INCREMENT;
+            }
+        }
+        else
+        {
+            if (haltTemperature > 0)
+            {
+                auxHeatingDelayTime = auxHeatingDelayTime - AUX_DELAY_TIME_INCREMENT;
+            }
+        }
+        break;
+
     default:
         break;
     }
@@ -166,7 +193,7 @@ void EditMenuItem(bool increment)
 {
     if (increment)
     {
-        if (menuItem == 6)
+        if (menuItem == MENU_ITEM_COUNT)
             menuItem = 0;
         else
             menuItem++;
@@ -174,7 +201,7 @@ void EditMenuItem(bool increment)
     else
     {
         if (menuItem == 0)
-            menuItem = 6;
+            menuItem = MENU_ITEM_COUNT;
         else
             menuItem--;
     }

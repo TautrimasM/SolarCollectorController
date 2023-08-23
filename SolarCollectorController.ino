@@ -34,6 +34,7 @@ float deltaExchangerBoiler = 0;
 float hysteresisCollectorExchanger = 0;
 float hysteresisExchangerBoiler = 0;
 float haltTemperature = 0;
+unsigned long auxHeatingDelayTime = 0;
 
 // event flags
 bool refreshScreenEvent = true;
@@ -47,7 +48,13 @@ bool boilerWaitFlag = false;
 bool boilerPumpShouldDoSomething = false;
 bool sensorErrorForLongTime = false;
 
+bool boilerSideAllowedToOperate = false;
+unsigned long auxHeatingStopTime = 0;
+bool auxHeatingWasOn = false;
+
 uint8_t menuItem = 0;
+
+unsigned int boilerPumpDelay = BOILER_DELAY_TIME_COLD;
 
 // physical objects
 Relay collectorPump(COLLECTOR_PUMP_PIN);
@@ -57,6 +64,8 @@ Relay degassingValve(DEGASSING_VALVE_PIN);
 Button leftButton(LEFT_BUTTON_PIN);
 Button midButton(MID_BUTTON_PIN);
 Button rightButton(RIGHT_BUTTON_PIN);
+
+Button auxHeatingInput(AUX_HEATING_INPUT_PIN);
 
 void setup()
 {

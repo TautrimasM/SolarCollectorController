@@ -58,6 +58,10 @@ void ReadSensors()
             logicEvent = true;
         }
     }
+    else if (sensorErrorFlag) // skip one read to allow onewire bus devices to reconfigure after failure
+    {
+        sensorErrorFlag = false;
+    }
     else
     {
         solarCollectorTemperature = temp1;

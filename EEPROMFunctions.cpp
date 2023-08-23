@@ -7,7 +7,9 @@ extern float deltaExchangerBoiler;
 extern float hysteresisCollectorExchanger;
 extern float hysteresisExchangerBoiler;
 extern float haltTemperature;
+extern unsigned long auxHeatingDelayTime;
 // float takes 4 bytes
+// long takes 4 bytes
 
 void UpdateEEPROM()
 {
@@ -16,6 +18,7 @@ void UpdateEEPROM()
     EEPROM.put(8, hysteresisCollectorExchanger);
     EEPROM.put(12, hysteresisExchangerBoiler);
     EEPROM.put(16, haltTemperature);
+    EEPROM.put(20, auxHeatingDelayTime);
 }
 void ReadEEPROM()
 {
@@ -24,4 +27,5 @@ void ReadEEPROM()
     EEPROM.get(8, hysteresisCollectorExchanger);
     EEPROM.get(12, hysteresisExchangerBoiler);
     EEPROM.get(16, haltTemperature);
+    // EEPROM.get(20, auxHeatingDelayTime); // uncomment after first run
 }
