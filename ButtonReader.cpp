@@ -170,14 +170,22 @@ void EditParameter(bool increment)
     case 7:
         if (increment)
         {
-            if (auxHeatingDelayTime < AUX_DELAY_TIME_MAX)
+            if (auxHeatingDelayTime >= AUX_DELAY_TIME_MAX)
+            {
+                auxHeatingDelayTime = 0;
+            }
+            else
             {
                 auxHeatingDelayTime = auxHeatingDelayTime + AUX_DELAY_TIME_INCREMENT;
             }
         }
         else
         {
-            if (haltTemperature > 0)
+            if (auxHeatingDelayTime <= 0)
+            {
+                auxHeatingDelayTime = AUX_DELAY_TIME_MAX;
+            }
+            else
             {
                 auxHeatingDelayTime = auxHeatingDelayTime - AUX_DELAY_TIME_INCREMENT;
             }

@@ -14,7 +14,7 @@ extern Button auxHeatingInput;
 extern LiquidCrystal_I2C lcd;
 
 extern uint8_t menuItem;
-extern unsigned int boilerPumpDelay;
+extern unsigned long boilerPumpDelay;
 
 extern float solarCollectorTemperature;
 extern float heatExchangerTemperature;
@@ -54,6 +54,7 @@ extern bool auxHeatingWasOn;
 void DoLogic()
 {
     SetBoilerDelay();
+    CheckAuxHeater();
 
     if (solarCollectorTemperature > haltTemperature && !sensorErrorForLongTime)
     {
@@ -103,19 +104,21 @@ void CheckBacklight()
         lcd.noBacklight();
     }
 }
-void CheckIfBoilerSideIsAllowedToOperate()
+void CheckAuxHeater()
 {
-    if (auxHeatingInput.getState()) // auto turn of backlight after set time
+    if (auxHeatingInput.isPressed()) // auto turn of backlight after set time
     {
         boilerSideAllowedToOperate = false;
         auxHeatingStopTime = millis();
         auxHeatingWasOn = true;
+        refreshScreenEvent = true;
     }
 
-    if ((!auxHeatingInput.getState() && !auxHeatingWasOn) || (auxHeatingWasOn && millis() - auxHeatingStopTime >= auxHeatingDelayTime))
+    if ((!auxHeatingInput.isPressed() && !auxHeatingWasOn) || (auxHeatingWasOn && millis() - auxHeatingStopTime >= auxHeatingDelayTime + 1000))
     {
         boilerSideAllowedToOperate = true;
         auxHeatingWasOn = false;
+        refreshScreenEvent = true;
     }
 }
 void CheckDegassingValve()
@@ -164,8 +167,6 @@ void CollectorPumpLogic()
 
 void BoilerPumpLogic()
 {
-    // CheckIfBoilerSideIsAllowedToOperate(); uncomment when sensor is ready
-
     if (boilerSideAllowedToOperate)
     {
 
@@ -185,6 +186,7 @@ void BoilerPumpLogic()
         }
         if (boilerPumpShouldDoSomething && !boilerPump.getState())
         {
+
             degassingValve.on();
             if (!boilerWaitFlag)
             {

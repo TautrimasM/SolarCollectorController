@@ -2,6 +2,7 @@
 #include "SerialPrinter.h"
 #include "Defines.h"
 #include "src/Relay.h"
+#include "src/Button.h"
 
 extern float solarCollectorTemperature;
 extern float heatExchangerTemperature;
@@ -12,6 +13,8 @@ extern unsigned long sensorFailTime;
 extern Relay collectorPump;
 extern Relay boilerPump;
 extern Relay degassingValve;
+
+extern Button auxHeatingInput;
 
 void InitSerial()
 {
@@ -31,14 +34,19 @@ void PrintSerialData()
 
     // Ss
     Serial.print(",");
-    Serial.print(collectorPump.getState());
+    Serial.print(collectorPump.getStateString());
     Serial.print(",");
     // Sb
     Serial.print(boilerPump.getStateString());
     Serial.print(",");
     // DG
     Serial.print(degassingValve.getStateString());
-
+    Serial.print(",");
+    // BT
+    if (auxHeatingInput.isPressed())
+        Serial.print("ON");
+    else
+        Serial.print("OFF");
     Serial.print(",");
     // run time
     Serial.print(millis());

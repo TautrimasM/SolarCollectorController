@@ -27,5 +27,5 @@ void ReadEEPROM()
     EEPROM.get(8, hysteresisCollectorExchanger);
     EEPROM.get(12, hysteresisExchangerBoiler);
     EEPROM.get(16, haltTemperature);
-    // EEPROM.get(20, auxHeatingDelayTime); // uncomment after first run
+    EEPROM.get(20, auxHeatingDelayTime); // uncomment after first run
 }

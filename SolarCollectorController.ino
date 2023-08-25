@@ -54,7 +54,7 @@ bool auxHeatingWasOn = false;
 
 uint8_t menuItem = 0;
 
-unsigned int boilerPumpDelay = BOILER_DELAY_TIME_COLD;
+unsigned long boilerPumpDelay = BOILER_DELAY_TIME_COLD;
 
 // physical objects
 Relay collectorPump(COLLECTOR_PUMP_PIN);
@@ -65,6 +65,7 @@ Button leftButton(LEFT_BUTTON_PIN);
 Button midButton(MID_BUTTON_PIN);
 Button rightButton(RIGHT_BUTTON_PIN);
 
+// not a button, but functions the same. should rename to DigitalInput
 Button auxHeatingInput(AUX_HEATING_INPUT_PIN);
 
 void setup()

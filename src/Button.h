@@ -13,9 +13,6 @@ public:
   Button(byte pin);
 
   void init();
-  void update();
-
-  byte getState();
   bool isPressed();
 };
 
