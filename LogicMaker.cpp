@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "LogicMaker.h"
 #include "EEPROMFunctions.h"
-#include "src/Button.h"
+#include "src/DigitalInput.h"
 #include "src/Relay.h"
 #include "src/LCI2C/LiquidCrystal_I2C.h"
 #include "Defines.h"
@@ -9,7 +9,7 @@
 extern Relay collectorPump;
 extern Relay boilerPump;
 extern Relay degassingValve;
-extern Button auxHeatingInput;
+extern DigitalInput auxHeatingInput;
 
 extern LiquidCrystal_I2C lcd;
 
@@ -27,6 +27,8 @@ extern float hysteresisCollectorExchanger;
 extern float hysteresisExchangerBoiler;
 
 extern float haltTemperature;
+extern bool systemHalt;
+extern bool forceHalt;
 
 extern bool degassingFlag;
 extern bool degassingInProgress;
@@ -56,13 +58,15 @@ void DoLogic()
     SetBoilerDelay();
     CheckAuxHeater();
 
-    if (solarCollectorTemperature > haltTemperature && !sensorErrorForLongTime)
+    if (solarCollectorTemperature > haltTemperature && !sensorErrorForLongTime && !forceHalt)
     {
+        systemHalt = false;
         CollectorPumpLogic();
         BoilerPumpLogic();
     }
     else
     {
+        systemHalt = true;
         HaltSystem();
     }
 
@@ -106,7 +110,7 @@ void CheckBacklight()
 }
 void CheckAuxHeater()
 {
-    if (auxHeatingInput.isPressed()) // auto turn of backlight after set time
+    if (auxHeatingInput.isPressed())
     {
         boilerSideAllowedToOperate = false;
         auxHeatingStopTime = millis();

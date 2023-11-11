@@ -32,7 +32,7 @@
 #define ID_EXCHANGER_SENSOR 2
 #define ID_BOILER_SENSOR 1
 
-#define MENU_ITEM_COUNT 7
+#define MENU_ITEM_COUNT 8
 
 // physical objects connection pins
 #define ONE_WIRE_BUS 2 // 15m line works ok witk ~1.5k pullup resistor and 150ohm resistors for each branch
@@ -46,5 +46,6 @@
 #define MID_BUTTON_PIN 8
 #define RIGHT_BUTTON_PIN 9
 
-#define SERIAL_BAUD_RATE 9600
+#define SERIAL_BAUD_RATE 115200
+#define MAX_UART_CHARS 60
 #endif

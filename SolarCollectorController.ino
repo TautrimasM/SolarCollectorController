@@ -1,5 +1,5 @@
 #include "src/Relay.h"
-#include "src/Button.h"
+#include "src/DigitalInput.h"
 
 #include "Defines.h"
 #include "SensorReader.h"
@@ -8,7 +8,7 @@
 #include "WatchdogPet.h"
 #include "LogicMaker.h"
 #include "EEPROMFunctions.h"
-#include "SerialPrinter.h"
+#include "SerialHandler.h"
 
 // variables for storing timing data
 unsigned long currentMillis = 0;
@@ -21,6 +21,7 @@ unsigned long backlightTimeStart = 0;
 unsigned long activityTimeStart = 0;
 unsigned long boilerWaitTimeStart = 0;
 unsigned long sensorFailTime = 0;
+unsigned long auxHeatingStopTime = 0;
 unsigned long readButtonsInterval = READ_BUTTONS_INTERVAL;
 
 // these variables values will be read from sensors
@@ -39,7 +40,6 @@ unsigned long auxHeatingDelayTime = 0;
 // event flags
 bool refreshScreenEvent = true;
 bool logicEvent = false;
-bool degassingFlag = false;
 bool degassingInProgress = false;
 bool sensorErrorFlag = false;
 bool backlightOn = true;
@@ -47,10 +47,13 @@ bool activityFlag = false;
 bool boilerWaitFlag = false;
 bool boilerPumpShouldDoSomething = false;
 bool sensorErrorForLongTime = false;
-
-bool boilerSideAllowedToOperate = false;
-unsigned long auxHeatingStopTime = 0;
+bool systemHalt = false;
 bool auxHeatingWasOn = false;
+bool boilerSideAllowedToOperate = false;
+
+// controll flags
+bool degassingFlag = false;
+bool forceHalt = false;
 
 uint8_t menuItem = 0;
 
@@ -61,12 +64,10 @@ Relay collectorPump(COLLECTOR_PUMP_PIN);
 Relay boilerPump(BOILER_PUMP_PIN);
 Relay degassingValve(DEGASSING_VALVE_PIN);
 
-Button leftButton(LEFT_BUTTON_PIN);
-Button midButton(MID_BUTTON_PIN);
-Button rightButton(RIGHT_BUTTON_PIN);
-
-// not a button, but functions the same. should rename to DigitalInput
-Button auxHeatingInput(AUX_HEATING_INPUT_PIN);
+DigitalInput leftButton(LEFT_BUTTON_PIN);
+DigitalInput midButton(MID_BUTTON_PIN);
+DigitalInput rightButton(RIGHT_BUTTON_PIN);
+DigitalInput auxHeatingInput(AUX_HEATING_INPUT_PIN);
 
 void setup()
 {
@@ -113,6 +114,7 @@ void loop()
   {
     logicEvent = false;
     DoLogic();
-    PrintSerialData();
   }
+
+  HandleComm();
 }

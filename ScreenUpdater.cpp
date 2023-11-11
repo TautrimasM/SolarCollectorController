@@ -2,7 +2,7 @@
 #include "src/LCI2C/LiquidCrystal_I2C.h"
 #include "ScreenUpdater.h"
 #include "src/Relay.h"
-#include "src/Button.h"
+#include "src/DigitalInput.h"
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
@@ -30,11 +30,13 @@ extern float haltTemperature;
 
 extern unsigned long sensorFailTime;
 extern bool sensorErrorForLongTime;
+extern bool systemHalt;
+extern bool forceHalt;
 
 extern unsigned long auxHeatingDelayTime;
 extern unsigned long auxHeatingStopTime;
 extern bool auxHeatingWasOn;
-extern Button auxHeatingInput;
+extern DigitalInput auxHeatingInput;
 
 extern Relay collectorPump;
 extern Relay boilerPump;
@@ -91,12 +93,14 @@ void UpdateScreen()
         DegassVaveMenu();
         break;
     case 6:
-        LowestTempMenu();
+        ForceHaltMenu();
         break;
     case 7:
+        LowestTempMenu();
+        break;
+    case 8:
         DelayAfterAuxHeatingMenu();
         break;
-
     default:
         InfoMenu();
         break;
@@ -134,7 +138,6 @@ void InfoMenu()
     lcd.write(byte(0));
 
     // line 2
-
     lcd.setCursor(0, 2);
     lcd.print("                    ");
     lcd.setCursor(0, 2);
@@ -207,32 +210,42 @@ void InfoMenu()
     }
 
     // line 3
-    lcd.setCursor(0, 3);
-    lcd.print("                    ");
-    lcd.setCursor(0, 3);
-    lcd.print("Ss=");
-    lcd.print(collectorPump.getStateString());
-    lcd.print(" ");
-    if (auxHeatingWasOn || auxHeatingInput.isPressed())
+    if (systemHalt)
     {
-        if (auxHeatingInput.isPressed())
-        {
-            lcd.print("BT=ON");
-        }
-        else
-        {
-            lcd.print("BT=OFF ");
-            lcd.print((millis() - auxHeatingStopTime) / 60000);
-            lcd.print("min");
-        }
+        lcd.setCursor(0, 3);
+        lcd.print("Sys. Stopped ");
     }
     else
     {
-        lcd.print("Sb=");
-        lcd.print(boilerPump.getStateString());
-        lcd.print(" DG=");
-        lcd.print(degassingValve.getStateString());
+        lcd.setCursor(0, 3);
+        lcd.print("                    ");
+        lcd.setCursor(0, 3);
+        lcd.print("Ss=");
+        lcd.print(collectorPump.getStateString());
+        lcd.print(" ");
+
+        if (auxHeatingWasOn || auxHeatingInput.isPressed())
+        {
+            if (auxHeatingInput.isPressed())
+            {
+                lcd.print("BT=ON");
+            }
+            else
+            {
+                lcd.print("BT=OFF ");
+                lcd.print((millis() - auxHeatingStopTime) / 60000);
+                lcd.print("min");
+            }
+        }
+        else
+        {
+            lcd.print("Sb=");
+            lcd.print(boilerPump.getStateString());
+        }
     }
+
+    lcd.print(" DG=");
+    lcd.print(degassingValve.getStateString());
 
     if (sensorErrorForLongTime)
     {
@@ -297,6 +310,15 @@ void DegassVaveMenu()
     lcd.print("Nuorinimo ventilis");
     lcd.setCursor(2, 1);
     lcd.print(degassingValve.getStateString());
+}
+
+void ForceHaltMenu()
+{
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Sistemos stabdymas");
+    lcd.setCursor(2, 1);
+    lcd.print(forceHalt ? "STOP" : "RUN");
 }
 
 void LowestTempMenu()
