@@ -12,6 +12,7 @@ void HysteresisCollectorExchangerMenu();
 void DeltaExchangerBoilerMenu();
 void HysterysisExchangerBoilerMenu();
 void DegassVaveMenu();
+void ForceHaltMenu();
 void LowestTempMenu();
 void DelayAfterAuxHeatingMenu();
 void StartupScreen();

@@ -1,14 +1,14 @@
 #include "Arduino.h"
 #include "ButtonReader.h"
-#include "src/Button.h"
+#include "src/DigitalInput.h"
 #include "src/Relay.h"
 #include "EEPROMFunctions.h"
 #include "Defines.h"
 
-extern Button leftButton;
-extern Button midButton;
-extern Button rightButton;
-extern Button auxHeatingInput;
+extern DigitalInput leftButton;
+extern DigitalInput midButton;
+extern DigitalInput rightButton;
+extern DigitalInput auxHeatingInput;
 
 extern Relay degassingValve;
 
@@ -27,6 +27,7 @@ extern bool degassingFlag;
 extern bool activityFlag;
 extern bool logicEvent;
 extern bool auxHeatingIsOn;
+extern bool forceHalt;
 
 extern unsigned long auxHeatingDelayTime;
 extern unsigned long readButtonsInterval;
@@ -151,6 +152,9 @@ void EditParameter(bool increment)
         break;
 
     case 6:
+        forceHalt = !forceHalt;
+        break;
+    case 7:
         if (increment)
         {
             if (haltTemperature < HALT_TEMP_MAX)
@@ -167,7 +171,7 @@ void EditParameter(bool increment)
         }
         break;
 
-    case 7:
+    case 8:
         if (increment)
         {
             if (auxHeatingDelayTime >= AUX_DELAY_TIME_MAX)

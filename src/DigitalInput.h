@@ -1,16 +1,16 @@
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef DINPUT_H
+#define DINPUT_H
 
 #include <Arduino.h>
 #define ACTIVE_STATE LOW // define active state
-class Button
+class DigitalInput
 {
 
 private:
   byte pin;
 
 public:
-  Button(byte pin);
+  DigitalInput(byte pin);
 
   void init();
   bool isPressed();
