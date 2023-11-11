@@ -13,7 +13,7 @@ void DeltaExchangerBoilerMenu();
 void HysterysisExchangerBoilerMenu();
 void DegassVaveMenu();
 void LowestTempMenu();
-
+void DelayAfterAuxHeatingMenu();
 void StartupScreen();
 
 #endif

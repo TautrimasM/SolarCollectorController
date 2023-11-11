@@ -31,6 +31,11 @@ extern float haltTemperature;
 extern unsigned long sensorFailTime;
 extern bool sensorErrorForLongTime;
 
+extern unsigned long auxHeatingDelayTime;
+extern unsigned long auxHeatingStopTime;
+extern bool auxHeatingWasOn;
+extern Button auxHeatingInput;
+
 extern Relay collectorPump;
 extern Relay boilerPump;
 extern Relay degassingValve;
@@ -87,6 +92,9 @@ void UpdateScreen()
         break;
     case 6:
         LowestTempMenu();
+        break;
+    case 7:
+        DelayAfterAuxHeatingMenu();
         break;
 
     default:
@@ -205,10 +213,26 @@ void InfoMenu()
     lcd.print("Ss=");
     lcd.print(collectorPump.getStateString());
     lcd.print(" ");
-    lcd.print("Sb=");
-    lcd.print(boilerPump.getStateString());
-    lcd.print(" DG=");
-    lcd.print(degassingValve.getStateString());
+    if (auxHeatingWasOn || auxHeatingInput.isPressed())
+    {
+        if (auxHeatingInput.isPressed())
+        {
+            lcd.print("BT=ON");
+        }
+        else
+        {
+            lcd.print("BT=OFF ");
+            lcd.print((millis() - auxHeatingStopTime) / 60000);
+            lcd.print("min");
+        }
+    }
+    else
+    {
+        lcd.print("Sb=");
+        lcd.print(boilerPump.getStateString());
+        lcd.print(" DG=");
+        lcd.print(degassingValve.getStateString());
+    }
 
     if (sensorErrorForLongTime)
     {
@@ -285,6 +309,17 @@ void LowestTempMenu()
     lcd.write(byte(0));
 }
 
+void DelayAfterAuxHeatingMenu()
+{
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Delsimas po");
+    lcd.setCursor(1, 1);
+    lcd.print("sildymo tenu:");
+    lcd.setCursor(2, 2);
+    lcd.print(auxHeatingDelayTime / 60000);
+    lcd.print("min");
+}
 void StartupScreen()
 {
     lcd.clear();

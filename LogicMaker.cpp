@@ -9,10 +9,12 @@
 extern Relay collectorPump;
 extern Relay boilerPump;
 extern Relay degassingValve;
+extern Button auxHeatingInput;
 
 extern LiquidCrystal_I2C lcd;
 
 extern uint8_t menuItem;
+extern unsigned long boilerPumpDelay;
 
 extern float solarCollectorTemperature;
 extern float heatExchangerTemperature;
@@ -44,75 +46,83 @@ extern bool sensorErrorFlag;
 extern bool sensorErrorForLongTime;
 extern bool refreshScreenEvent;
 
+extern bool boilerSideAllowedToOperate;
+extern unsigned long auxHeatingStopTime;
+extern unsigned long auxHeatingDelayTime;
+extern bool auxHeatingWasOn;
+
 void DoLogic()
 {
+    SetBoilerDelay();
+    CheckAuxHeater();
+
     if (solarCollectorTemperature > haltTemperature && !sensorErrorForLongTime)
     {
-
-        if (collectorPump.getState())
-        {
-            if (solarCollectorTemperature - heatExchangerTemperature < deltaCollectorExchanger - hysteresisCollectorExchanger)
-            {
-                collectorPump.off();
-                refreshScreenEvent = true;
-            }
-        }
-        else
-        {
-            if (solarCollectorTemperature - heatExchangerTemperature >= deltaCollectorExchanger)
-            {
-                collectorPump.on();
-                refreshScreenEvent = true;
-            }
-        }
-
-        if (boilerPump.getState())
-        {
-            if (heatExchangerTemperature - boilerTemperature < deltaExchangerBoiler - hysteresisExchangerBoiler)
-            {
-                boilerPumpShouldDoSomething = false;
-                refreshScreenEvent = true;
-                boilerPump.off();
-                if (!degassingInProgress)
-                {
-                    degassingValve.off();
-                }
-            }
-        }
-        else
-        {
-            if (heatExchangerTemperature - boilerTemperature >= deltaExchangerBoiler)
-            {
-                boilerPumpShouldDoSomething = true;
-            }
-        }
-        if (boilerPumpShouldDoSomething && !boilerPump.getState())
-        {
-            degassingValve.on();
-            if (!boilerWaitFlag)
-            {
-                boilerWaitTimeStart = millis();
-                boilerWaitFlag = true;
-            }
-            else if (millis() - boilerWaitTimeStart >= BOILER_DELAY_TIME)
-            {
-                boilerPump.on();
-                boilerWaitFlag = false;
-                refreshScreenEvent = true;
-            }
-        }
+        CollectorPumpLogic();
+        BoilerPumpLogic();
     }
     else
     {
-        boilerPumpShouldDoSomething = false;
-        collectorPump.off();
-        boilerPump.off();
-        if (!degassingInProgress)
-        {
-            degassingValve.off();
-        }
+        HaltSystem();
     }
 
+    CheckDegassingValve();
+
+    CheckUserActivity();
+}
+
+void CheckUserActivity()
+{
+    if (activityFlag)
+    {
+        activityTimeStart = millis();
+        activityFlag = false;
+    }
+    if (millis() - activityTimeStart >= ACTIVITY_TIME)
+    {
+        menuItem = 0;
+        UpdateEEPROM();
+    }
+}
+void CheckSensorError()
+{
+    if (sensorErrorFlag)
+    {
+        // backlightOn = true;
+    }
+}
+void CheckBacklight()
+{
+    if (backlightOn) // auto turn of backlight after set time
+    {
+        lcd.backlight();
+        backlightTimeStart = millis();
+        backlightOn = false;
+    }
+    if (millis() - backlightTimeStart >= ACTIVITY_TIME)
+    {
+        lcd.noBacklight();
+    }
+}
+void CheckAuxHeater()
+{
+    if (auxHeatingInput.isPressed()) // auto turn of backlight after set time
+    {
+        boilerSideAllowedToOperate = false;
+        auxHeatingStopTime = millis();
+        auxHeatingWasOn = true;
+        refreshScreenEvent = true;
+    }
+
+    if ((!auxHeatingInput.isPressed() && !auxHeatingWasOn) || (auxHeatingWasOn && millis() - auxHeatingStopTime >= auxHeatingDelayTime + 1000))
+    {
+        boilerSideAllowedToOperate = true;
+        auxHeatingWasOn = false;
+        refreshScreenEvent = true;
+    }
+}
+void CheckDegassingValve()
+{
     if (degassingFlag && !degassingInProgress)
     {
         degassingTimeStart = millis();
@@ -128,32 +138,94 @@ void DoLogic()
         degassingInProgress = false;
         degassingFlag = false;
     }
+}
+void HaltSystem()
+{
+    collectorPump.off();
+    HaltBoilerSide(false);
+}
 
-    /*if (sensorErrorFlag)
+void CollectorPumpLogic()
+{
+    if (collectorPump.getState())
     {
-        // backlightOn = true;
+        if (solarCollectorTemperature - heatExchangerTemperature < deltaCollectorExchanger - hysteresisCollectorExchanger)
+        {
+            collectorPump.off();
+            refreshScreenEvent = true;
+        }
     }
+    else
+    {
+        if (solarCollectorTemperature - heatExchangerTemperature >= deltaCollectorExchanger)
+        {
+            collectorPump.on();
+            refreshScreenEvent = true;
+        }
+    }
+}
 
-    if (backlightOn) // auto turn of backlight after set time
+void BoilerPumpLogic()
+{
+    if (boilerSideAllowedToOperate)
     {
-        lcd.backlight();
-        backlightTimeStart = millis();
-        backlightOn = false;
-    }
-    if (millis() - backlightTimeStart >= activityTime)
-    {
-        lcd.noBacklight();
-    }
-    */
 
-    if (activityFlag)
-    {
-        activityTimeStart = millis();
-        activityFlag = false;
+        if (boilerPump.getState())
+        {
+            if (heatExchangerTemperature - boilerTemperature < deltaExchangerBoiler - hysteresisExchangerBoiler)
+            {
+                HaltBoilerSide(false);
+            }
+        }
+        else
+        {
+            if (heatExchangerTemperature - boilerTemperature >= deltaExchangerBoiler)
+            {
+                boilerPumpShouldDoSomething = true;
+            }
+        }
+        if (boilerPumpShouldDoSomething && !boilerPump.getState())
+        {
+
+            degassingValve.on();
+            if (!boilerWaitFlag)
+            {
+                boilerWaitTimeStart = millis();
+                boilerWaitFlag = true;
+            }
+            else if (millis() - boilerWaitTimeStart >= boilerPumpDelay)
+            {
+                boilerPump.on();
+                boilerWaitFlag = false;
+                refreshScreenEvent = true;
+            }
+        }
     }
-    if (millis() - activityTimeStart >= ACTIVITY_TIME)
+    else
     {
-        menuItem = 0;
-        UpdateEEPROM();
+        HaltBoilerSide(true);
+    }
+}
+
+void HaltBoilerSide(bool forceDegassClose)
+{
+    boilerPumpShouldDoSomething = false;
+    refreshScreenEvent = true;
+    boilerPump.off();
+    if (!degassingInProgress || forceDegassClose)
+    {
+        degassingValve.off();
+    }
+}
+
+void SetBoilerDelay() // sets boiler pump delay after degass valve opens
+{
+    if (boilerTemperature > BOILER_COLD_TEMP)
+    {
+        boilerPumpDelay = BOILER_DELAY_TIME;
+    }
+    else
+    {
+        boilerPumpDelay = BOILER_DELAY_TIME_COLD;
     }
 }
