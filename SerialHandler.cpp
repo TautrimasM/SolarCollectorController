@@ -116,22 +116,9 @@ void HandleData()
             index++;
         }
 
-        if (degass == 1)
-        {
-            degassingFlag = true;
-        }
-        else
-        {
-            degassingFlag = false;
-        }
-        if (systemHalt == 1)
-        {
-            forceHalt = true;
-        }
-        else
-        {
-            forceHalt = false;
-        }
+        degassingFlag = degass == 1 ? true : false;
+        forceHalt = systemHalt == 1 ? true : false;
+
         UpdateEEPROM();
         SendData();
     }
@@ -171,8 +158,10 @@ void SendData()
     Serial.print(",");
     Serial.print(auxHeatingInput.isPressed() ? 1 : 0);
     Serial.print(",");
-    Serial.print(degassingInProgress ? 1 : 0);
+    Serial.print(degassingFlag ? 1 : 0);
     Serial.print(",");
     Serial.print(sensorErrorForLongTime ? 1 : 0);
+    Serial.print(",");
+    Serial.print(forceHalt ? 1 : 0);
     Serial.println();
 }
