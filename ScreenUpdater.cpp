@@ -213,7 +213,7 @@ void InfoMenu()
     if (systemHalt)
     {
         lcd.setCursor(0, 3);
-        lcd.print("Sys. Stopped ");
+        lcd.print("**SYS. STOP**");
     }
     else
     {

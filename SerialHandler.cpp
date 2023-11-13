@@ -47,11 +47,12 @@ void HandleComm()
     {
         if (!timingStarted)
         {
+            timingStarted = true;
             startTime = millis();
         }
         if (millis() - startTime > maxTime)
         {
-
+            timingStarted = false;
             byte n = Serial.available();
             for (int i = 0; i < n; i++)
             {
@@ -71,7 +72,8 @@ void HandleData()
     else if (receivedData[0] == '1')
     {
         int command = 0;
-        int degass = 0, systemHalt = 0;
+        int degass = 0;
+        int systemHalt = 0;
 
         // Tokenize the string using strtok
         char *token = strtok(receivedData, ",");
